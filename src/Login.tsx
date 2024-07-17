@@ -37,7 +37,6 @@ const Login: React.FC = () => {
                     navigate('/');
         }
 
-
     },[token])
 
     const onHandleSubmit = (data: ILogin) => {

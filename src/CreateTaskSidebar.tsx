@@ -1,5 +1,5 @@
 // src/components/Sidebar.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     Drawer,
     AppBar,
@@ -19,6 +19,7 @@ import {
     Grid,
     Autocomplete,
     FormHelperText,
+    LinearProgress,
 } from '@mui/material';
 import { styled } from '@mui/system';
 
@@ -31,44 +32,68 @@ import { DatePicker, DateTimePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { Task } from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface sidebarprops {
     open: boolean;
     onClose: () => void;
+    TaskInfo?: any;
+    modalType: string
 }
-interface ITask {
-    Id: number,
-    Title: string,
-    Description: string,
-    Status: { label: string, value: number },
+interface ICard {
+    Id?: string,
+    Title?: string,
+    Description?: string,
+    Status?: { label: string, value: number } | null,
     DueDate: dayjs.Dayjs,
-    CreatedDate: string
-    UserId: string
+    CreatedDate?: string
+    UserId?: string
 }
-const CreateTaskSidebar: React.FC<sidebarprops> = ({ open, onClose }) => {
+const CreateTaskSidebar: React.FC<sidebarprops> = ({ open, onClose, TaskInfo, modalType }) => {
+    const { loading, error, token, tasks } = useSelector((state: any) => state.user);
 
     const dispatch = useDispatch();
-    const { register, handleSubmit, control, formState: { errors } } = useForm<ITask>();
-
+    const { register, handleSubmit, control, formState: { errors }, reset } = useForm<ICard>();
+    console.log(TaskInfo);
+    const name = !!TaskInfo ? 'Edit' : 'Create';
+    const edit = !!TaskInfo ? true : false;
     const onSubmit = (data: any) => {
         console.log(dayjs(data.DueDate, 'DD-MM-YYYY').toDate());
-        console.log(data.Description.replace(/\s/g, ''));
+        console.log(data.Description);
         console.log(data);
         data.DueDate = dayjs(data.DueDate, 'DD-MM-YYYY').toDate();
-        data.Description = data.Description.replace(/\s/g, '');
-        data.Status=data.Status.value;
-        dispatch({ type: 'CREATE_TASK', data: data });
+        data.Description = data.Description.replace(/\s\s+/g, ' ');
+        data.Status = data.Status.value;
+        if (data.Id == 0 || data.Id == '' || data.Id == undefined && !edit) {
+            dispatch({ type: 'CREATE_TASK', data: data });
+
+        }
+        else {
+            dispatch({ type: 'EDIT_TASK', data: data });
+
+        }
+        onClose();
     }
     const options = [
-        { label: 'Option 1', value: 1 },
-        { label: 'Option 2', value: 2 },
-        { label: 'Option 3', value: 3 },
+        { label: 'Open', value: 1 },
+        { label: 'In Progress', value: 2 },
+        { label: 'Completed', value: 3 },
     ];
-    const status = [{ value: 0, label: 'Open' }, { value: 1, label: 'InProgress' }, { value: 2, label: 'Completed' }];
-    const top100Films = [
-        { label: 'The Shawshank Redemption', year: 1994 },
-        { label: 'The Godfather', year: 1972 }];
+    const task: ICard =
+    {
+        Id: '',
+        CreatedDate: '',
+        Description: '',
+        Title: '',
+        Status: null,
+        DueDate: dayjs(new Date())
+
+
+    }
+    const status = [{ value: 0, label: 'Open' }, { value: 1, label: 'In Progress' }, { value: 2, label: 'Completed' }];
+
     const drawerWidth = {
         xs: '80%',   // 80% on extra-small
         sm: '60%',   // 60% on small
@@ -86,6 +111,30 @@ const CreateTaskSidebar: React.FC<sidebarprops> = ({ open, onClose }) => {
             width: drawerWidth,
         },
     }));
+    useEffect(() => {
+        if (!!TaskInfo) {
+            console.log(TaskInfo);
+            reset({
+                Id: TaskInfo.Id,
+                Title: TaskInfo.Title,
+                Description: TaskInfo.Description,
+                DueDate: dayjs(TaskInfo.DueDate),
+                Status: options.filter(a => a.value == TaskInfo.Status)[0]
+
+            });
+        }
+        else {
+            console.log(task);
+            task.DueDate = dayjs(new Date());
+            reset(task);
+            reset({
+                DueDate: dayjs(new Date())
+            })
+        }
+
+
+    }, [open, TaskInfo]);
+
 
 
     return (
@@ -101,126 +150,142 @@ const CreateTaskSidebar: React.FC<sidebarprops> = ({ open, onClose }) => {
                 },
             }}
             anchor='right' open={open} onClose={onClose} >
-            <AppBar position='static' color='transparent'>
-                <Toolbar>
-                    <Typography variant="h6" sx={{ flexGrow: 1 }}>Create Task</Typography>
-                    <Button onClick={onClose} sx={{ flexGrow: 1, justifyContent: 'right' }}>Close</Button>
+            {open && modalType == 'Edit' ? (
+                <>
+                    <AppBar position='static' color='transparent'>
+                        <Toolbar>
 
-                </Toolbar>
-            </AppBar>
-            <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ padding: '10px 20px' }}>
-                <TextField
-                    margin="normal"
-                    fullWidth
-                    id="Title"
-                    label="Title"
-                    autoFocus
-                    {...register('Title', {
-                        required: 'Title is required'
+                            <Grid container>
+                            <Grid item xs={10} sm={10} md={10}>
+ <Typography variant="h6" sx={{ flexGrow: 1,padding:'3px' }}>{name} Task</Typography>
+ </Grid>
+                                <Grid item xs={2} sm={2} md={2}>
+                                    <IconButton onClick={onClose} sx={{ flexGrow: 1, justifyContent: 'right' }}>
+                                        <CloseIcon></CloseIcon>
+                                    </IconButton>
 
-
-                    })}
-                    error={!!errors.Title}
-                    helperText={errors.Title ? errors.Title.message : ''}
-                />
-                <TextField
-                    margin="normal"
-                    fullWidth
-                    id="Description"
-                    label="Description"
-                    multiline
-                    maxRows={4}
-                    autoFocus
-                    {...register('Description', {
-                        required: 'Description is required'
+                                </Grid>
+                            </Grid>
 
 
-                    })}
-                    error={!!errors.Description}
-                    helperText={errors.Description ? errors.Description.message : ''}
-                />
-                <Controller
-                    name="Status"
-                    control={control}
-                    defaultValue={options[0]}
-                    rules={{ required: 'Status is required' }} // Validation rule
-                    render={({ field }) => (
-                        <>
-                            <Autocomplete
-                                sx={{ margin: '15px 0 0 0' }}
-                                {...field}
-                                options={options}
-                                getOptionLabel={(option) => option.label}
-                                onChange={(_, value) => field.onChange(value)}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Select an Option"
-                                        variant="outlined"
-                                        error={!!errors.Status}
-                                        helperText={errors.Status ? errors.Status.message : ''}
+                        </Toolbar>
+                    </AppBar>
+                    <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ padding: '10px 20px' }}>
+                        <TextField
+                            margin="normal"
+                            fullWidth
+                            id="Title"
+                            label="Title"
+                            autoFocus
+                            {...register('Title', {
+                                required: 'Title is required'
+
+
+                            })}
+                            error={!!errors.Title}
+                            helperText={errors.Title ? errors.Title.message : ''}
+                        />
+                        <TextField
+                            margin="normal"
+                            fullWidth
+                            id="Description"
+                            label="Description"
+                            multiline
+                            maxRows={4}
+                            autoFocus
+                            sx={{ whiteSpace: 'pre-line' }}
+                            {...register('Description', {
+                                required: 'Description is required'
+
+
+                            })}
+                            error={!!errors.Description}
+                            helperText={errors.Description ? errors.Description.message : ''}
+                        />
+                        <Controller
+                            name="Status"
+                            control={control}
+                            defaultValue={null}
+                            rules={{ required: 'Status is required' }} // Validation rule
+                            render={({ field }) => (
+                                <>
+                                    <Autocomplete
+                                        sx={{ margin: '15px 0 0 0' }}
+                                        {...field}
+                                        options={options}
+                                        getOptionLabel={(option) => option.label}
+                                        onChange={(_, value) => field.onChange(value)}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Status"
+                                                variant="outlined"
+                                                error={!!errors.Status}
+                                                helperText={errors.Status ? errors.Status.message : ''}
+                                            />
+                                        )}
+                                    />
+
+                                </>
+                            )}
+                        />
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <Controller
+                                name="DueDate"
+                                control={control}
+
+                                rules={{
+                                    required: "Date and Time are required",
+                                    validate: {
+                                        //  future: (value) =>  value.isAfter(dayjs()) || "Cannot select past dates",
+                                    }
+                                }}
+                                render={({ field }) => (
+                                    <DatePicker
+                                        defaultValue={dayjs(new Date())}
+                                        sx={{ margin: '15px 0 0 0', width: '100%' }}
+                                        label="Due Date"
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        minDate={dayjs()} // Disable past dates and times
                                     />
                                 )}
                             />
+                        </LocalizationProvider>
 
-                        </>
-                    )}
-                />
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <Controller
-                        name="DueDate"
-                        control={control}
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} sm={6} md={6}>
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    sx={{ mt: 2 }}
+                                >
+                                    Save
+                                </Button>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={6}>
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    sx={{ mt: 2 }}
+                                >
+                                    Reset
+                                </Button>
+                            </Grid>
 
-                        rules={{
-                            required: "Date and Time are required",
-                            validate: {
-                                future: (value) => value.isAfter(dayjs()) || "Cannot select past dates",
-                            }
-                        }}
-                        render={({ field }) => (
-                            <DatePicker
+                        </Grid>
 
-                                sx={{ margin: '15px 0 0 0', width: '100%' }}
-                                label="Select Due Date"
-                                value={field.value}
-                                onChange={field.onChange}
-                                minDate={dayjs()} // Disable past dates and times
-                            />
-                        )}
-                    />
-                </LocalizationProvider>
-
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6} md={6}>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            sx={{ mt: 2 }}
-                        >
-                            Save
-                        </Button>
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={6}>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            sx={{ mt: 2 }}
-                        >
-                            Reset
-                        </Button>
-                    </Grid>
-
-                </Grid>
-
-            </Box>
+                    </Box>
+                </>) : <></>}
         </Drawer>
 
 
     );
+
 
 
 };

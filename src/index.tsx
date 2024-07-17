@@ -7,6 +7,9 @@ import { ThemeProvider } from '@emotion/react';
 import theme from './theme';
 import { Provider } from 'react-redux';
 import store from './Store';
+// @ts-ignore
+import { Snackbar } from 'react-redux-snackbar';
+import CustomSnackbar from './SnackBar';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -17,6 +20,7 @@ root.render(
 
       <ThemeProvider theme={theme}>
         <App />
+        <CustomSnackbar />
 
       </ThemeProvider>
     </Provider>

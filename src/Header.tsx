@@ -1,15 +1,23 @@
 // src/components/Header.tsx
-import React, { useState } from 'react';
-import { AppBar, Toolbar, Typography, Button, CircularProgress, Box, LinearProgress } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { AppBar, Toolbar, Typography, Button, CircularProgress, Box, LinearProgress, Avatar, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { useSelector } from 'react-redux';
 
 const Header: React.FC = () => {
     const navigate = useNavigate();
-    const { users, loading, error, token } = useSelector((state: any) => state.user);
+    const { users, loading, error, token, user } = useSelector((state: any) => state.user);
+    const settings = ['Profile', 'Logout'];
+    console.log(user);
     const location = useLocation();
     const [open, setOpen] = useState(false);
+    useEffect(() => {
+        if (user == null) {
+                    //get user
+        }
+
+    }, [user]);
     const toggleSidebar = () => {
         setOpen(!open)
     }
@@ -18,13 +26,34 @@ const Header: React.FC = () => {
         sessionStorage.removeItem('jwt');
         navigate('/login')
     }
+    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+    const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+
+    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElNav(event.currentTarget);
+    };
+    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElUser(event.currentTarget);
+    };
+
+    const handleCloseNavMenu = () => {
+        setAnchorElUser(null);
+        setAnchorElNav(null);
+    };
+
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
+        logOut();
+
+    };
+
     const isLoggedIn = !!sessionStorage.getItem('jwt') ? true : false;
     return (
         <AppBar position="static" >
             <Toolbar>
 
-                <Button color="inherit" onClick={toggleSidebar}
-                >Toggle</Button>
+                {/* <Button color="inherit" onClick={toggleSidebar}
+                >Toggle</Button> */}
                 <Typography variant="h6" sx={{ flexGrow: 1 }}>
                     BirdiTMS
                 </Typography>
@@ -43,12 +72,38 @@ const Header: React.FC = () => {
 
 
                 {isLoggedIn &&
-                    <Button color="inherit" onClick={logOut}>
-                        Log Out
-                    </Button>
+                    <Box sx={{ flexGrow: 0 }}>
+                        <Tooltip title="Open settings">
+                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                <Avatar src="/static/images/avatar/2.jpg" />
+                            </IconButton>
+                        </Tooltip>
+                        <Menu
+                            sx={{ mt: '45px' }}
+                            id="menu-appbar"
+                            anchorEl={anchorElUser}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(anchorElUser)}
+                            onClose={handleCloseNavMenu}
+                        >
+                            {settings.map((setting) => (
+                                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                                    <Typography textAlign="center">{setting}</Typography>
+                                </MenuItem>
+                            ))}
+                        </Menu>
+                    </Box>
                 }
-                
-            
+
+
             </Toolbar>
         </AppBar>
     );

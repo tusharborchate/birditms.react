@@ -19,8 +19,8 @@ const App = () => {
 
     <Router>
       <Header />
-      {loading && <LinearProgress color="info" />}
-      <Container sx={{ marginTop: 4 }}>
+      {loading && <LinearProgress color="info"/>}
+      <Container sx={{ marginTop: 4 }}  maxWidth={false} disableGutters>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

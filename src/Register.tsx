@@ -130,13 +130,6 @@ const Register: React.FC = () => {
             </Paper>
           
 
-                <Snackbar sx={{textAlign:'center'}}
-                    anchorOrigin={{ vertical, horizontal }}
-                    open={!!error && !showSnack}
-                    autoHideDuration={5000}
-                    onClose={handleClose}
-                    message={error}
-                />
 
             
 
