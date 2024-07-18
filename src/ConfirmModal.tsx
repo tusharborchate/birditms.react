@@ -13,7 +13,6 @@ const ConfirmDialog :React.FC<IConfirm> =({open,text,onClose}) => {
 
   const handleClose = (confirm:any) => {
     if (confirm) {
-      // Handle confirmation action
       onClose(confirm);
       console.log("Confirmed!");
     } else {
@@ -29,9 +28,12 @@ const ConfirmDialog :React.FC<IConfirm> =({open,text,onClose}) => {
         <DialogTitle noWrap>{text}</DialogTitle>
       
         <DialogActions>
-          <Button onClick={() => onClose(false)} color="primary">
+                    <Button onClick={() => onClose(false)} color="primary">
             Cancel
           </Button>
+
+
+          
           <Button onClick={() => onClose(true)} color="primary">
             Confirm
           </Button>
