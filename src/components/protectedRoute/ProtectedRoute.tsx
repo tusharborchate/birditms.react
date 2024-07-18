@@ -10,9 +10,9 @@ const ProtectedRoute: React.FC = (props) => {
       sessionStorage.getItem('jwt') == null ||
       sessionStorage.getItem('jwt') == undefined
     ) {
-      navigate('/login');
+      navigate('/');
     }
-  });
+  }, []);
 
   return (
     <React.Fragment>

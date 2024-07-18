@@ -13,39 +13,34 @@ import {
 import { Form, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { CREATE_USER_STARTED } from '../actions';
 
-interface ILogin {
+interface IRegister {
   Email: string;
   Password: string;
   Username: string;
+  ConfirmPassword: string;
 }
-const Login: React.FC = () => {
+const Register: React.FC = () => {
   const {
     register,
+    watch,
     handleSubmit,
     formState: { errors },
-  } = useForm<ILogin>();
+  } = useForm<IRegister>();
   const dispatch = useDispatch();
-  const { users, loading, error, token } = useSelector(
-    (state: any) => state.user
-  );
+  const { users, loading, error } = useSelector((state: any) => state.user);
   const [showSnack, setShowSnack] = useState(false);
   const vertical = 'bottom';
   const horizontal = 'center';
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (sessionStorage.getItem('jwt') != null) {
-      navigate('/');
-    }
-  }, [token]);
-
-  const onHandleSubmit = (data: ILogin) => {
+  const onHandleSubmit = (data: IRegister) => {
     setShowSnack(false);
 
     console.log(data);
     data.Username = data.Email;
-    dispatch({ type: 'LOGIN_USER', data: data });
+    dispatch({ type: CREATE_USER_STARTED, data: data });
 
     return;
   };
@@ -57,14 +52,13 @@ const Login: React.FC = () => {
       return;
     }
     setShowSnack(true);
-    dispatch({ type: 'REGISTER_USER_DONE' });
   };
 
   return (
     <Container component="main" maxWidth="xs">
       <Paper elevation={3} sx={{ padding: 3 }}>
         <Typography variant="h5" align="center" gutterBottom>
-          Login
+          Register
         </Typography>
         <Box
           component="form"
@@ -73,6 +67,7 @@ const Login: React.FC = () => {
         >
           <TextField
             margin="normal"
+            required
             fullWidth
             id="Email"
             label="Email Address"
@@ -107,6 +102,23 @@ const Login: React.FC = () => {
             error={!!errors.Password}
             helperText={errors.Password ? errors.Password.message : ''}
           />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            label="Confirm Password"
+            type="password"
+            id="confirmPassword"
+            {...register('ConfirmPassword', {
+              required: 'Confirm Password is required',
+              validate: (value) =>
+                value == watch('Password') || 'Passwords do not match',
+            })}
+            error={!!errors.ConfirmPassword}
+            helperText={
+              errors.ConfirmPassword ? errors.ConfirmPassword.message : ''
+            }
+          />
           <Button
             type="submit"
             fullWidth
@@ -119,17 +131,8 @@ const Login: React.FC = () => {
           </Button>
         </Box>
       </Paper>
-
-      <Snackbar
-        sx={{ textAlign: 'center' }}
-        anchorOrigin={{ vertical, horizontal }}
-        open={!!error && !showSnack}
-        autoHideDuration={5000}
-        onClose={handleClose}
-        message={error}
-      />
     </Container>
   );
 };
 
-export default Login;
+export default Register;

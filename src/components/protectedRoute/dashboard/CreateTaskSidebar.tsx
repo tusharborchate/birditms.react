@@ -23,7 +23,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 
-import App from './App';
 import { Controller, useForm } from 'react-hook-form';
 import AdapterDateFns from '@mui/x-date-pickers/AdapterDateFns';
 import DesktopDatePicker from '@mui/x-date-pickers/DesktopDatePicker';
@@ -35,6 +34,8 @@ import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
 import { Task } from '@mui/icons-material';
 import CloseIcon from '@mui/icons-material/Close';
+import { CREATE_TASK_STARTED, EDIT_TASK_STARTED } from '../../../actions';
+import { IRootReducerShape } from '../../../types';
 
 interface sidebarprops {
   open: boolean;
@@ -57,8 +58,8 @@ const CreateTaskSidebar: React.FC<sidebarprops> = ({
   TaskInfo,
   modalType,
 }) => {
-  const { loading, error, token, tasks } = useSelector(
-    (state: any) => state.user
+  const {Loading } = useSelector(
+    (state: IRootReducerShape) => state.Common
   );
 
   const dispatch = useDispatch();
@@ -80,9 +81,9 @@ const CreateTaskSidebar: React.FC<sidebarprops> = ({
     data.Description = data.Description.replace(/\s\s+/g, ' ');
     data.Status = data.Status.value;
     if (data.Id == 0 || data.Id == '' || (data.Id == undefined && !edit)) {
-      dispatch({ type: 'CREATE_TASK', data: data });
+      dispatch({ type: CREATE_TASK_STARTED, data: data });
     } else {
-      dispatch({ type: 'EDIT_TASK', data: data });
+      dispatch({ type: EDIT_TASK_STARTED, data: data });
     }
     onClose();
   };

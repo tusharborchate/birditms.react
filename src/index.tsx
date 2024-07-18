@@ -6,10 +6,8 @@ import reportWebVitals from './reportWebVitals';
 import { ThemeProvider } from '@emotion/react';
 import theme from './theme';
 import { Provider } from 'react-redux';
-import store from './Store';
-// @ts-ignore
-import { Snackbar } from 'react-redux-snackbar';
-import CustomSnackbar from './SnackBar';
+import store from './store';
+import CustomSnackbar from './components/common/SnackBar';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

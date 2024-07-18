@@ -1,5 +1,6 @@
 // src/features/snackbarSlice.js
 import { createSlice } from '@reduxjs/toolkit';
+import { ISnackbar } from '../../types';
 
 const snackbarSlice = createSlice({
   name: 'snackbar',

@@ -1,62 +1,35 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import {
-  AppBar,
-  Box,
-  Button,
-  Container,
-  LinearProgress,
-  Slide,
-  Toolbar,
-  Typography,
-  useScrollTrigger,
-} from '@mui/material';
-import Login from './Login';
-import Header from './Header';
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useNavigate,
-} from 'react-router-dom';
-import Register from './Register';
-import { Home } from './Components/Dashboard/Home';
-import ProtectedRoute from './ProtectedRoute/ProtectedRoute';
+import { Container, LinearProgress } from '@mui/material';
+import Login from './components/Login';
+import Header from './components/layout/Header';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Register from './components/Register';
 import { useSelector } from 'react-redux';
-
+import ProtectedRoute from './components/protectedRoute/ProtectedRoute';
+import { Home } from './components/protectedRoute/dashboard/Home';
+import { HomePath, LoginPath, RegisterPath } from './routes';
+import { IRootReducerShape } from './types';
 const App = () => {
-  const { users, loading, error, token } = useSelector(
-    (state: any) => state.user
+  const { Loading } = useSelector(
+    (state: IRootReducerShape) => state.Common
   );
 
   return (
     <Router>
       <Header />
-      {loading && <LinearProgress color="info" />}
+      {Loading && <LinearProgress color="info" />}
+
       <Container sx={{ marginTop: 4 }} maxWidth={false} disableGutters>
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path={LoginPath} element={<Login />} />
+          <Route path={RegisterPath} element={<Register />} />
 
           <Route element={<ProtectedRoute></ProtectedRoute>}>
-            <Route path="/" element={<Home />} />
+            <Route path={HomePath} element={<Home />} />
           </Route>
-          {/* {sessionStorage.getItem('jwt') && (  )} */}
         </Routes>
       </Container>
     </Router>
-    /* <AppBar position="absolute" sx={{ top: 'auto', bottom: 0 }}>
-                   <Toolbar>
-                       <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                           Footer Menu
-                       </Typography>
-                       <Button color="inherit">Home</Button>
-                       <Button color="inherit">About</Button>
-                       <Button color="inherit">Contact</Button>
-                   </Toolbar>
-               </AppBar>
-               </> */
   );
 };
 

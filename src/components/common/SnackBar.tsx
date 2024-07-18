@@ -2,15 +2,15 @@
 import React from 'react';
 import { Snackbar, Alert } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { closeSnackbar } from './snackbarReducer';
+import { closeSnackbar } from '../../store/reducer/snackbarReducer';
+import { IRootReducerShape } from '../../types';
 
 const CustomSnackbar = () => {
   const dispatch = useDispatch();
   const { open, message, severity } = useSelector(
-    (state: any) => state.snackbar
+    (state: IRootReducerShape) => state.Snackbar
   );
 
-  
   const handleClose = () => {
     dispatch(closeSnackbar());
   };

@@ -15,29 +15,28 @@ import {
   Tooltip,
 } from '@mui/material';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import Sidebar from './Sidebar';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import AcUnitOutlinedIcon from '@mui/icons-material/AcUnitOutlined';
+import Sidebar from '../common/Sidebar';
 import { useSelector } from 'react-redux';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
-  const { users, loading, error, token, user } = useSelector(
-    (state: any) => state.user
-  );
-  const settings = ['Profile', 'Logout'];
-  console.log(user);
+
+  const settings = ['Logout'];
   const location = useLocation();
   const [open, setOpen] = useState(false);
-  useEffect(() => {
-    if (user == null) {
-      //get user
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user == null) {
+  //     //get user
+  //   }
+  // }, [user]);
   const toggleSidebar = () => {
     setOpen(!open);
   };
   const logOut = () => {
     sessionStorage.removeItem('jwt');
-    navigate('/login');
+    navigate('/');
   };
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
@@ -69,13 +68,14 @@ const Header: React.FC = () => {
       <Toolbar>
         {/* <Button color="inherit" onClick={toggleSidebar}
                 >Toggle</Button> */}
+        <AcUnitOutlinedIcon></AcUnitOutlinedIcon>
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           BirdiTMS
         </Typography>
 
         <Sidebar open={open} onClose={toggleSidebar} />
         {location.pathname == '/register' && (
-          <Button color="inherit" component={Link} to="/login">
+          <Button color="inherit" component={Link} to="/">
             Login
           </Button>
         )}
@@ -89,7 +89,7 @@ const Header: React.FC = () => {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar src="/static/images/avatar/2.jpg" />
+                <AccountCircleOutlinedIcon fontSize="large"></AccountCircleOutlinedIcon>
               </IconButton>
             </Tooltip>
             <Menu

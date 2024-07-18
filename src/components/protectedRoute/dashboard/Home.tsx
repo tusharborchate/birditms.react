@@ -18,19 +18,22 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import CreateTaskSidebar from '../../CreateTaskSidebar';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import ContentPasteSearchTwoToneIcon from '@mui/icons-material/ContentPasteSearchTwoTone';
+import AddTaskOutlinedIcon from '@mui/icons-material/AddTaskOutlined';
 import Chip from '@mui/material/Chip';
-import '../../index.css';
 import CustomCard from './style';
-import CustomizedDialogs from '../../Modal';
-import ConfirmDialog from '../../ConfirmModal';
+import ConfirmDialog from '../../common/ConfirmModal';
+import CustomizedDialogs from '../../common/Modal';
+import CreateTaskSidebar from './CreateTaskSidebar';
+import { DELETE_TASK_STARTED, GET_TASK_STARTED } from '../../../actions';
+import { IRootReducerShape } from '../../../types';
 
 export const Home = () => {
   interface ICard {
@@ -53,7 +56,7 @@ export const Home = () => {
     setModalType('');
 
     if (confirm && modalType == 'Delete') {
-      dispatch({ type: 'DELETE_TASK', data: task?.Id });
+      dispatch({ type: DELETE_TASK_STARTED, data: task?.Id });
     }
     if (open) {
       setTask(null);
@@ -71,17 +74,27 @@ export const Home = () => {
 
   const dispatch = useDispatch();
 
-  const { loading, error, token, tasks, refresh } = useSelector(
-    (state: any): ILogin => state.user
+  const { Tasks, Refresh } = useSelector(
+    (state: IRootReducerShape) => state.Task
   );
-  console.log(refresh);
+
+  const { Loading } = useSelector((state: IRootReducerShape) => state.Common);
+  console.log(Refresh);
   useEffect(() => {
-    dispatch({ type: 'GET_TASKS' });
+    dispatch({ type: GET_TASK_STARTED });
   }, [dispatch]);
+
+  //   const allTasks= useMemo(()=>{
+  //     console.log('a');
+  //      return tasks.map((a,i)=>{
+  //         a.DueDate= a.DueDate?.split('T')[0]
+  //      });
+
+  //   },[tasks]);
+
   console.log(sessionStorage.getItem('jwt'));
 
   const onEdit = (e: any, card: ICard | null) => {
-    e.stopPropagation();
     console.log(card);
     setTask(card);
     setOpen(true);
@@ -106,29 +119,27 @@ export const Home = () => {
 
   return (
     <Container sx={{ marginTop: 4 }}>
-      {tasks.length > 0 ? (
+      <Grid container marginBottom={'10px'}>
+        <Grid item xs={6} sm={6} md={6}>
+          <Typography variant="h5" gutterBottom>
+            Tasks
+          </Typography>
+        </Grid>
+        <Grid item xs={6} sm={6} md={6} sx={{ textAlign: 'right' }}>
+          <Button
+            onClick={(e) => onEdit(e, null)}
+            variant="contained"
+            startIcon={<AddTaskOutlinedIcon />}
+          >
+            Create Task
+          </Button>
+        </Grid>
+      </Grid>
+      <Divider />
+      {Tasks.length > 0 ? (
         <>
-          <Grid container marginBottom={'10px'}>
-            <Grid item xs={6} sm={6} md={6}>
-              <Typography variant="h5" gutterBottom>
-                Tasks
-              </Typography>
-            </Grid>
-            <Grid item xs={6} sm={6} md={6} sx={{ textAlign: 'right' }}>
-              <Button
-                onClick={(e) => onEdit(e, null)}
-                variant="contained"
-                startIcon={<AddCircleOutlineIcon />}
-              >
-                Create Task
-              </Button>
-            </Grid>
-          </Grid>
-
-          <Divider />
-
           <Grid container spacing={2} sx={{ marginTop: '20px' }}>
-            {tasks.map((card, index) => (
+            {Tasks.map((card, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
                 <CustomCard
                   onMouseEnter={() => setHover(card.Id)}
@@ -188,7 +199,7 @@ export const Home = () => {
                     <Grid container sx={{ margin: '10px 0 0 0' }}>
                       <Grid item xs={8} sm={8} md={8}>
                         <Typography variant="body2" color="text.secondary">
-                          Due by <b>{card.DueDate}</b>
+                          Due by <b>{card.DueDate?.split('T')[0]}</b>
                         </Typography>
                       </Grid>
                       <Grid item xs={4} sm={4} md={4} textAlign={'right'}>
@@ -220,20 +231,33 @@ export const Home = () => {
               toggle={toggle}
             ></CustomizedDialogs>
           )}
-          <CreateTaskSidebar
-            open={open && modalType == 'Edit'}
-            modalType={modalType}
-            onClose={toggle}
-            TaskInfo={task}
-          ></CreateTaskSidebar>
         </>
-      ) : loading ? (
+      ) : Loading ? (
         <CircularProgress sx={{ position: 'fixed', top: '50%', left: '50%' }} />
       ) : (
-        <Box sx={{ position: 'fixed', top: '50%', left: '30%' }}>
-          <Typography variant="h3"> No Tasks Available.</Typography>{' '}
+        <Box
+          sx={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '300px',
+            height: '200px',
+            textAlign: 'center',
+          }}
+        >
+          <ContentPasteSearchTwoToneIcon
+            sx={{ width: '300px', height: '200px' }}
+          ></ContentPasteSearchTwoToneIcon>
+          <Typography variant="h6"> You have not created any task. </Typography>
         </Box>
       )}
+      <CreateTaskSidebar
+        open={open && modalType == 'Edit'}
+        modalType={modalType}
+        onClose={toggle}
+        TaskInfo={task}
+      ></CreateTaskSidebar>
     </Container>
   );
 };
