@@ -1,44 +1,49 @@
-import { takeLatest, call, put } from 'redux-saga/effects'
+import { takeLatest, call, put } from 'redux-saga/effects';
 import axios, { AxiosError } from 'axios';
 import { Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import axiosInstance from '../axiosHelper';
 import { openSnackbar } from '../snackbarReducer';
-interface ILogin {
-
-}
+interface ILogin {}
 
 function* RegisterUser(data: any): any {
-
   try {
     console.log(data);
 
-    const response = yield call(axiosInstance.post, 'users/register', data.data);
+    const response = yield call(
+      axiosInstance.post,
+      'users/register',
+      data.data
+    );
     console.log(response);
-    yield put({ type: 'REGISTER_USER_SUCCESS', payload: 'User Created Successfully.' });
+    yield put({
+      type: 'REGISTER_USER_SUCCESS',
+      payload: 'User Created Successfully.',
+    });
     //yield put({ type: 'REGISTER_USER', payload: response.data });
-    yield put(openSnackbar({ message: 'User created successfully', severity: 'success' }));
+    yield put(
+      openSnackbar({
+        message: 'User created successfully',
+        severity: 'success',
+      })
+    );
 
     window.location.href = '/login';
-  }
-
-  catch (error: any) {
-    console.log(error)
+  } catch (error: any) {
+    console.log(error);
     const axiosError: AxiosError = error;
     if (axiosError.response?.status == 409) {
-
-
-      yield put({ type: 'REGISTER_USER_FAILED', payload: 'User already exist' });
-      yield put(openSnackbar({ message: 'User Already Exist', severity: 'error' }));
-
+      yield put({
+        type: 'REGISTER_USER_FAILED',
+        payload: 'User already exist',
+      });
+      yield put(
+        openSnackbar({ message: 'User Already Exist', severity: 'error' })
+      );
     }
-
-
   }
-
 }
-
 
 function* Login(payload: any): any {
   try {
@@ -49,28 +54,31 @@ function* Login(payload: any): any {
       yield put({ type: 'LOGIN_USER_SUCCESS', payload: response.data.token });
       sessionStorage.setItem('jwt', response.data.token);
       const userResponse: any = yield call(axiosInstance.get, 'users');
-      sessionStorage.setItem('email',userResponse.data.Email)
+      sessionStorage.setItem('email', userResponse.data.Email);
       yield put({ type: 'GET_USER_SUCCESS', payload: userResponse.data });
 
       console.log(userResponse);
-
-    }
-    else {
+    } else {
       yield put({ type: 'LOGIN_FAILED' });
-      yield put(openSnackbar({ message: 'Incorrect username or password', severity: 'error' }));
-
-
+      yield put(
+        openSnackbar({
+          message: 'Incorrect username or password',
+          severity: 'error',
+        })
+      );
     }
-  }
-  catch (error) {
+  } catch (error) {
     yield put({ type: 'LOGIN_FAILED' });
-    yield put(openSnackbar({ message: 'Incorrect username or password', severity: 'error' }));
-
+    yield put(
+      openSnackbar({
+        message: 'Incorrect username or password',
+        severity: 'error',
+      })
+    );
   }
 }
 
 function* GetTasks(): any {
-
   yield put({ type: 'GET_TASK_STARTED' });
 
   const response = yield call(axiosInstance.get, 'birditasks');
@@ -80,27 +88,31 @@ function* GetTasks(): any {
 }
 
 function* CreateTask(payload: any): any {
-
   try {
-
-
     const data = payload.data;
     console.log(data);
     const response = yield call(axiosInstance.post, 'birditasks', data);
     if (response.status == 201) {
-      yield put(openSnackbar({ message: 'Task created successfully.', severity: 'success' }));
+      yield put(
+        openSnackbar({
+          message: 'Task created successfully.',
+          severity: 'success',
+        })
+      );
       yield put({ type: 'CREATE_TASK_SUCCESS' });
       yield put({ type: 'GET_TASKS' });
-
     }
     console.log(response);
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error);
     yield put({ type: 'CREATE_TASK_FAILURE' });
 
-    yield put(openSnackbar({ message: 'Error occured while creating task.', severity: 'error' }));
-
+    yield put(
+      openSnackbar({
+        message: 'Error occured while creating task.',
+        severity: 'error',
+      })
+    );
   }
 }
 
@@ -111,23 +123,31 @@ function* GetTaskById(payload: any): any {
 
 function* EditTask(payload: any): any {
   try {
-
-
-    const response = yield call(axiosInstance.put, `birditasks/${payload.data.Id}`, payload.data);
+    const response = yield call(
+      axiosInstance.put,
+      `birditasks/${payload.data.Id}`,
+      payload.data
+    );
     console.log(response);
-    yield put(openSnackbar({ message: 'Task updated successfully.', severity: 'success' }));
+    yield put(
+      openSnackbar({
+        message: 'Task updated successfully.',
+        severity: 'success',
+      })
+    );
     yield put({ type: 'EDIT_TASK_SUCCESS' });
     yield put({ type: 'GET_TASKS' });
-
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error);
     yield put({ type: 'EDIT_TASK_FAILURE' });
 
-    yield put(openSnackbar({ message: 'Error occured while updating task.', severity: 'error' }));
-
+    yield put(
+      openSnackbar({
+        message: 'Error occured while updating task.',
+        severity: 'error',
+      })
+    );
   }
-
 }
 
 function* DeleteTask(payload: any): any {
@@ -137,13 +157,19 @@ function* DeleteTask(payload: any): any {
     yield put({ type: 'DELETE_TASK_SUCCESS' });
     yield put({ type: 'GET_TASKS' });
 
-    yield put(openSnackbar({ message: 'Task deleted successfully.', severity: 'success' }));
-
-  }
-
-  catch (error) {
-    yield put(openSnackbar({ message: 'Error occured while deleting task.', severity: 'error' }));
-
+    yield put(
+      openSnackbar({
+        message: 'Task deleted successfully.',
+        severity: 'success',
+      })
+    );
+  } catch (error) {
+    yield put(
+      openSnackbar({
+        message: 'Error occured while deleting task.',
+        severity: 'error',
+      })
+    );
   }
 }
 
@@ -155,7 +181,6 @@ function* rootSaga() {
   yield takeLatest('GET_TASK_BY_ID', GetTaskById);
   yield takeLatest('EDIT_TASK', EditTask);
   yield takeLatest('DELETE_TASK', DeleteTask);
-
 }
 
 export default rootSaga;

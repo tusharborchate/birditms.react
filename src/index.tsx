@@ -17,14 +17,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-
       <ThemeProvider theme={theme}>
         <App />
         <CustomSnackbar />
-
       </ThemeProvider>
     </Provider>
-
   </React.StrictMode>
 );
 
