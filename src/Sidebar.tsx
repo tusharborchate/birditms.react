@@ -24,7 +24,8 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
       <AppBar position="static" color="transparent">
         <Toolbar>
 
-          
+
+
           <Typography variant="h6">Menu</Typography>
         </Toolbar>
       </AppBar>
