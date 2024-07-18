@@ -31,6 +31,11 @@ const ConfirmDialog: React.FC<IConfirm> = ({ open, text, onClose }) => {
 
         <DialogActions>
           <Button onClick={() => onClose(false)} color="primary">
+
+
+
+
+            
             Cancel
           </Button>
 
@@ -38,6 +43,10 @@ const ConfirmDialog: React.FC<IConfirm> = ({ open, text, onClose }) => {
             Confirm
           </Button>
         </DialogActions>
+
+
+
+
       </Dialog>
     </div>
   );
