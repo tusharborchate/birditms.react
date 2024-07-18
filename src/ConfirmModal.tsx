@@ -37,6 +37,8 @@ const ConfirmDialog: React.FC<IConfirm> = ({ open, text, onClose }) => {
 
 
 
+
+
             
             Cancel
           </Button>
