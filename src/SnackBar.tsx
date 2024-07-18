@@ -10,6 +10,7 @@ const CustomSnackbar = () => {
     (state: any) => state.snackbar
   );
 
+  
   const handleClose = () => {
     dispatch(closeSnackbar());
   };
