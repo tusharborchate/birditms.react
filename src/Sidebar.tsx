@@ -26,6 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
 
 
+
           <Typography variant="h6">Menu</Typography>
         </Toolbar>
       </AppBar>
