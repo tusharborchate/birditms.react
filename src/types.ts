@@ -1,12 +1,18 @@
-interface ITask {
+export interface ITask {
   Id: string;
   Title: string;
   Description: string;
-  Status: string;
+  Status: Status;
   DueDate: string;
   CreatedDate: string;
 }
-interface IUser {
+
+export enum Status {
+  Open = 0,
+  InProgress = 1,
+  Completed = 2,
+}
+export interface IUser {
   Email: string;
 }
 export interface IUserState {
@@ -16,6 +22,7 @@ export interface IUserState {
 export interface ITaskState {
   Tasks: ITask[];
   Refresh: boolean;
+  Loading: boolean;
 }
 export interface ICommonState {
   Loading: boolean;

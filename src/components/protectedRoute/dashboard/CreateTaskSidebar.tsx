@@ -35,7 +35,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Task } from '@mui/icons-material';
 import CloseIcon from '@mui/icons-material/Close';
 import { CREATE_TASK_STARTED, EDIT_TASK_STARTED } from '../../../actions';
-import { IRootReducerShape } from '../../../types';
+import { IRootReducerShape, ITask, Status } from '../../../types';
 
 interface sidebarprops {
   open: boolean;
@@ -43,8 +43,8 @@ interface sidebarprops {
   TaskInfo?: any;
   modalType: string;
 }
-interface ICard {
-  Id?: string;
+interface IForm {
+  Id?: string | number;
   Title?: string;
   Description?: string;
   Status?: { label: string; value: number } | null;
@@ -58,9 +58,7 @@ const CreateTaskSidebar: React.FC<sidebarprops> = ({
   TaskInfo,
   modalType,
 }) => {
-  const {Loading } = useSelector(
-    (state: IRootReducerShape) => state.Common
-  );
+  const { Loading } = useSelector((state: IRootReducerShape) => state.Common);
 
   const dispatch = useDispatch();
   const {
@@ -69,12 +67,15 @@ const CreateTaskSidebar: React.FC<sidebarprops> = ({
     control,
     formState: { errors },
     reset,
-  } = useForm<ICard>();
+  } = useForm<IForm>();
   console.log(TaskInfo);
   const name = TaskInfo ? 'Edit' : 'Create';
   const edit = TaskInfo ? true : false;
+
   const onSubmit = (data: any) => {
-    console.log(dayjs(data.DueDate, 'DD-MM-YYYY').toDate());
+    if (!dayjs(data.DueDate, 'DD-MM-YYYY').isValid()) {
+      return false;
+    }
     console.log(data.Description);
     console.log(data);
     data.DueDate = dayjs(data.DueDate, 'DD-MM-YYYY').toDate();
@@ -87,44 +88,29 @@ const CreateTaskSidebar: React.FC<sidebarprops> = ({
     }
     onClose();
   };
+
   const options = [
-    { label: 'Open', value: 1 },
-    { label: 'In Progress', value: 2 },
-    { label: 'Completed', value: 3 },
+    { label: 'Open', value: Status.Open },
+    { label: 'In Progress', value: Status.InProgress },
+    { label: 'Completed', value: Status.Completed },
   ];
-  const task: ICard = {
-    Id: '',
+
+  const task: IForm = {
+    Id: 0,
     CreatedDate: '',
     Description: '',
     Title: '',
     Status: null,
     DueDate: dayjs(new Date()),
   };
-  const status = [
-    { value: 0, label: 'Open' },
-    { value: 1, label: 'In Progress' },
-    { value: 2, label: 'Completed' },
-  ];
 
   const drawerWidth = {
     xs: '80%', // 80% on extra-small
     sm: '60%', // 60% on small
     md: '20%', // 30% on medium
   };
-  //   const reset =()=>{
-  //    reset()
-
-  //   }
-
-  const StyledDrawer = styled(Drawer)(({ theme }): any => ({
-    width: drawerWidth,
-    size: 'sm',
-    '& .MuiDrawer-paper': {
-      width: drawerWidth,
-    },
-  }));
-  useEffect(() => {
-    if (TaskInfo) {
+  const resetForm = () => {
+    if (!!TaskInfo) {
       console.log(TaskInfo);
       reset({
         Id: TaskInfo.Id,
@@ -134,13 +120,24 @@ const CreateTaskSidebar: React.FC<sidebarprops> = ({
         Status: options.filter((a) => a.value == TaskInfo.Status)[0],
       });
     } else {
-      console.log(task);
       task.DueDate = dayjs(new Date());
       reset(task);
-      reset({
-        DueDate: dayjs(new Date()),
-      });
     }
+
+    // reset({
+    //   DueDate: dayjs(new Date()),
+    // });
+  };
+
+  const StyledDrawer = styled(Drawer)(({ theme }): any => ({
+    width: drawerWidth,
+    size: 'sm',
+    '& .MuiDrawer-paper': {
+      width: drawerWidth,
+    },
+  }));
+  useEffect(() => {
+    resetForm();
   }, [open, TaskInfo]);
 
   return (
@@ -275,11 +272,12 @@ const CreateTaskSidebar: React.FC<sidebarprops> = ({
               </Grid>
               <Grid item xs={12} sm={6} md={6}>
                 <Button
-                  type="submit"
+                  type="button"
                   fullWidth
                   variant="contained"
                   color="primary"
                   sx={{ mt: 2 }}
+                  onClick={resetForm}
                 >
                   Reset
                 </Button>

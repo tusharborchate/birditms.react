@@ -14,6 +14,7 @@ import { Form, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { CREATE_USER_STARTED } from '../actions';
+import { IRootReducerShape } from '../types';
 
 interface IRegister {
   Email: string;
@@ -29,7 +30,9 @@ const Register: React.FC = () => {
     formState: { errors },
   } = useForm<IRegister>();
   const dispatch = useDispatch();
-  const { users, loading, error } = useSelector((state: any) => state.user);
+  const state = useSelector((state: IRootReducerShape) => state);
+  console.log(state);
+  const Loading = state.Common.Loading;
   const [showSnack, setShowSnack] = useState(false);
   const vertical = 'bottom';
   const horizontal = 'center';
@@ -125,7 +128,7 @@ const Register: React.FC = () => {
             variant="contained"
             color="primary"
             sx={{ mt: 2 }}
-            disabled={loading}
+            disabled={Loading}
           >
             Login
           </Button>

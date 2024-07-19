@@ -1,5 +1,5 @@
-import { takeLatest, call, put } from 'redux-saga/effects';
-import axios, { AxiosError } from 'axios';
+import { takeLatest, call, put, all } from 'redux-saga/effects';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { Snackbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,6 +10,7 @@ import {
   DELETE_TASK_STARTED,
   EDIT_TASK_STARTED,
   GET_TASK_BY_ID_STARTED,
+  GET_TASK_FAILED,
   GET_TASK_STARTED,
   GET_TASK_SUCCESS,
   SET_LOADING,
@@ -17,8 +18,17 @@ import {
 
 function* GetTasks(): any {
   yield put({ type: SET_LOADING, payload: true });
-  const response = yield call(axiosInstance.get, 'birditasks');
-  yield put({ type: GET_TASK_SUCCESS, payload: response.data });
+console.log('cd')
+  try {
+    const response: AxiosResponse = yield call(axiosInstance.get, 'birditasks');
+    console.log(response);
+    if (response.status == 200) {
+        yield put({ type: GET_TASK_SUCCESS, payload: response.data });
+      
+    }
+  } catch (Error) {
+    yield put({ type: GET_TASK_FAILED, payload: false });
+  }
   yield put({ type: SET_LOADING, payload: false });
 }
 
@@ -39,7 +49,7 @@ function* CreateTask(payload: any): any {
       yield put({ type: GET_TASK_STARTED });
     }
   } catch (error) {
-    console.log(error);
+    yield put({ type: SET_LOADING, payload: false });
 
     yield put(
       openSnackbar({
@@ -48,7 +58,6 @@ function* CreateTask(payload: any): any {
       })
     );
   }
-  yield put({ type: SET_LOADING, payload: false });
 }
 
 function* GetTaskById(payload: any): any {
@@ -78,6 +87,7 @@ function* EditTask(payload: any): any {
     yield put({ type: GET_TASK_STARTED });
   } catch (error) {
     console.log(error);
+    yield put({ type: SET_LOADING, payload: false });
 
     yield put(
       openSnackbar({
@@ -86,7 +96,6 @@ function* EditTask(payload: any): any {
       })
     );
   }
-  yield put({ type: SET_LOADING, payload: false });
 }
 
 function* DeleteTask(payload: any): any {
@@ -102,6 +111,8 @@ function* DeleteTask(payload: any): any {
       })
     );
   } catch (error) {
+    yield put({ type: SET_LOADING, payload: false });
+
     yield put(
       openSnackbar({
         message: 'Error occured while deleting task.',
@@ -109,13 +120,14 @@ function* DeleteTask(payload: any): any {
       })
     );
   }
-  yield put({ type: SET_LOADING, payload: false });
 }
 
 export function* taskSaga() {
-  yield takeLatest(GET_TASK_STARTED, GetTasks);
-  yield takeLatest(CREATE_TASK_STARTED, CreateTask);
-  yield takeLatest(GET_TASK_BY_ID_STARTED, GetTaskById);
-  yield takeLatest(EDIT_TASK_STARTED, EditTask);
-  yield takeLatest(DELETE_TASK_STARTED, DeleteTask);
+  yield all([
+    takeLatest(GET_TASK_STARTED, GetTasks),
+    takeLatest(CREATE_TASK_STARTED, CreateTask),
+    takeLatest(GET_TASK_BY_ID_STARTED, GetTaskById),
+    takeLatest(EDIT_TASK_STARTED, EditTask),
+    takeLatest(DELETE_TASK_STARTED, DeleteTask),
+  ]);
 }

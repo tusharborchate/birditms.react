@@ -36,7 +36,7 @@ const Header: React.FC = () => {
   };
   const logOut = () => {
     sessionStorage.removeItem('jwt');
-    navigate('/');
+    window.location.href = '/';
   };
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null

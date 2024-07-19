@@ -9,10 +9,9 @@ import ProtectedRoute from './components/protectedRoute/ProtectedRoute';
 import { Home } from './components/protectedRoute/dashboard/Home';
 import { HomePath, LoginPath, RegisterPath } from './routes';
 import { IRootReducerShape } from './types';
+
 const App = () => {
-  const { Loading } = useSelector(
-    (state: IRootReducerShape) => state.Common
-  );
+  const { Loading } = useSelector((state: IRootReducerShape) => state.Common);
 
   return (
     <Router>

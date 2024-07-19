@@ -33,23 +33,16 @@ import ConfirmDialog from '../../common/ConfirmModal';
 import CustomizedDialogs from '../../common/Modal';
 import CreateTaskSidebar from './CreateTaskSidebar';
 import { DELETE_TASK_STARTED, GET_TASK_STARTED } from '../../../actions';
-import { IRootReducerShape } from '../../../types';
+import { IRootReducerShape, ITask, Status } from '../../../types';
 
 export const Home = () => {
-  interface ICard {
-    Id?: string | undefined;
-    Title?: string;
-    Description?: string;
-    DueDate?: string;
-    Status: string;
-  }
   const [open, setOpen] = useState(false);
   const [hover, setHover] = useState<string | undefined>('');
 
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [modalType, setModalType] = useState<string>('');
 
-  const [task, setTask] = useState<ICard | null>(null);
+  const [task, setTask] = useState<ITask | null>(null);
   const [refreshLoad, setRefreshLoad] = useState(true);
   const toggle = (confirm?: any) => {
     setOpen(!open);
@@ -63,26 +56,19 @@ export const Home = () => {
     }
   };
 
-  interface ILogin {
-    IsAuthenticated: boolean;
-    loading: boolean;
-    error: string;
-    token: string;
-    tasks: ICard[];
-    refresh: boolean;
-  }
-
   const dispatch = useDispatch();
 
-  const { Tasks, Refresh } = useSelector(
+  const { Tasks, Refresh, Loading } = useSelector(
     (state: IRootReducerShape) => state.Task
   );
 
-  const { Loading } = useSelector((state: IRootReducerShape) => state.Common);
+  const commonLoading = useSelector(
+    (state: IRootReducerShape) => state.Common.Loading
+  );
   console.log(Refresh);
   useEffect(() => {
     dispatch({ type: GET_TASK_STARTED });
-  }, [dispatch]);
+  }, []);
 
   //   const allTasks= useMemo(()=>{
   //     console.log('a');
@@ -91,10 +77,9 @@ export const Home = () => {
   //      });
 
   //   },[tasks]);
-
   console.log(sessionStorage.getItem('jwt'));
 
-  const onEdit = (e: any, card: ICard | null) => {
+  const onEdit = (e: any, card: ITask | null) => {
     console.log(card);
     setTask(card);
     setOpen(true);
@@ -102,20 +87,19 @@ export const Home = () => {
 
     // dispatch({ type: 'GET_TASK_BY_ID', data: card.id });
   };
-  const onDelete = (e: any, card: ICard) => {
+  const onDelete = (e: any, card: ITask) => {
     e.stopPropagation();
     console.log(card);
     setOpen(true);
     setModalType('Delete');
     setTask(card);
   };
-  const onOpenModal = (card: ICard) => {
+  const onOpenModal = (card: ITask) => {
     console.log(card);
     setTask(card);
     setOpen(true);
     setModalType('Open');
   };
-  const cards: ICard[] = [];
 
   return (
     <Container sx={{ marginTop: 4 }}>
@@ -136,7 +120,7 @@ export const Home = () => {
         </Grid>
       </Grid>
       <Divider />
-      {Tasks.length > 0 ? (
+      {!!Tasks&&Tasks.length > 0 && (
         <>
           <Grid container spacing={2} sx={{ marginTop: '20px' }}>
             {Tasks.map((card, index) => (
@@ -204,11 +188,15 @@ export const Home = () => {
                       </Grid>
                       <Grid item xs={4} sm={4} md={4} textAlign={'right'}>
                         <Chip
-                          label={
-                            card.Status == '1' ? 'In Progress' : 'Completed'
+                          label={Status[card.Status]}
+                          color={
+                            card.Status == 0
+                              ? 'primary'
+                              : card.Status == 1
+                                ? 'warning'
+                                : 'success'
                           }
-                          color={card.Status == '1' ? 'warning' : 'success'}
-                          variant={card.Status == '1' ? 'outlined' : 'filled'}
+                          variant={card.Status != 2 ? 'outlined' : 'filled'}
                         />
                       </Grid>
                     </Grid>
@@ -232,9 +220,9 @@ export const Home = () => {
             ></CustomizedDialogs>
           )}
         </>
-      ) : Loading ? (
-        <CircularProgress sx={{ position: 'fixed', top: '50%', left: '50%' }} />
-      ) : (
+      )}
+
+      {    (!!Tasks&&Tasks.length == 0 && !Loading ) ||(!Tasks&&!Loading) && (
         <Box
           sx={{
             position: 'fixed',
@@ -251,6 +239,9 @@ export const Home = () => {
           ></ContentPasteSearchTwoToneIcon>
           <Typography variant="h6"> You have not created any task. </Typography>
         </Box>
+      )}
+      {Loading && (
+        <CircularProgress sx={{ position: 'fixed', top: '50%', left: '50%' }} />
       )}
       <CreateTaskSidebar
         open={open && modalType == 'Edit'}

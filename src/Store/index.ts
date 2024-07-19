@@ -14,6 +14,7 @@ const initialState: IRootReducerShape = {
   Task: {
     Refresh: false,
     Tasks: [],
+    Loading: false,
     // Initial state for reducer 2
   },
   Common: {
