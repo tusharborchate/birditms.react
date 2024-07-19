@@ -34,7 +34,6 @@ import CustomizedDialogs from '../../common/Modal';
 import CreateTaskSidebar from './CreateTaskSidebar';
 import { DELETE_TASK_STARTED, GET_TASK_STARTED } from '../../../actions';
 import { IRootReducerShape, ITask, Status } from '../../../types';
-import './home.css';
 
 export const Home = () => {
   const [open, setOpen] = useState(false);
@@ -212,7 +211,15 @@ export const Home = () => {
 
       {Tasks == null ||
         (Tasks?.length == 0 && !Loading && (
-          <Box className="noTaskBox">
+          <Box sx={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '300px',
+            height: '200px',
+            textAlign: 'center',
+          }}>
             <ContentPasteSearchTwoToneIcon
               sx={{ width: '300px', height: '200px' }}
             ></ContentPasteSearchTwoToneIcon>
