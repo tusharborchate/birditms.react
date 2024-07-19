@@ -130,7 +130,7 @@ const Register: React.FC = () => {
             sx={{ mt: 2 }}
             disabled={Loading}
           >
-            Login
+            Register
           </Button>
         </Box>
       </Paper>
