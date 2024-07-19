@@ -9,13 +9,12 @@ const sagaMiddleWare = createSagaMiddleware();
 const initialState: IRootReducerShape = {
   User: {
     IsAuthenticated: false,
-    User: { Email: '' }, // Initial state for reducer 1
+    User: { Email: '' },
   },
   Task: {
     Refresh: false,
     Tasks: [],
     Loading: false,
-    // Initial state for reducer 2
   },
   Common: {
     Loading: false,

@@ -14,16 +14,6 @@ interface IConfirm {
   onClose: (confirm: any) => void;
 }
 const ConfirmDialog: React.FC<IConfirm> = ({ open, text, onClose }) => {
-  const handleClose = (confirm: any) => {
-    if (confirm) {
-      onClose(confirm);
-      console.log('Confirmed!');
-    } else {
-      onClose(confirm);
-      console.log('Cancelled!');
-    }
-  };
-
   return (
     <div>
       <Dialog open={open} onClose={() => onClose(false)} fullWidth>

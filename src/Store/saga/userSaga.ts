@@ -65,11 +65,8 @@ function* Login(payload: any): any {
       yield put({ type: LOGIN_USER_SUCCESS });
 
       const userResponse: any = yield call(AxiosService.axiosGet, 'users');
-      //check if response 200 else redirect
       sessionStorage.setItem('email', userResponse.data.Email);
       yield put({ type: GET_USER_SUCCESS, payload: userResponse.data });
-
-      console.log(userResponse);
     } else {
       yield put(
         openSnackbar({

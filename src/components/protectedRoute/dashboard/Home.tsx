@@ -34,6 +34,7 @@ import CustomizedDialogs from '../../common/Modal';
 import CreateTaskSidebar from './CreateTaskSidebar';
 import { DELETE_TASK_STARTED, GET_TASK_STARTED } from '../../../actions';
 import { IRootReducerShape, ITask, Status } from '../../../types';
+import './home.css';
 
 export const Home = () => {
   const [open, setOpen] = useState(false);
@@ -62,31 +63,17 @@ export const Home = () => {
     (state: IRootReducerShape) => state.Task
   );
 
-  const commonLoading = useSelector(
-    (state: IRootReducerShape) => state.Common.Loading
-  );
-  console.log(Refresh);
   useEffect(() => {
     dispatch({ type: GET_TASK_STARTED });
   }, []);
-
-  //   const allTasks= useMemo(()=>{
-  //     console.log('a');
-  //      return tasks.map((a,i)=>{
-  //         a.DueDate= a.DueDate?.split('T')[0]
-  //      });
-
-  //   },[tasks]);
-  console.log(sessionStorage.getItem('jwt'));
 
   const onEdit = (e: any, card: ITask | null) => {
     console.log(card);
     setTask(card);
     setOpen(true);
     setModalType('Edit');
-
-    // dispatch({ type: 'GET_TASK_BY_ID', data: card.id });
   };
+
   const onDelete = (e: any, card: ITask) => {
     e.stopPropagation();
     console.log(card);
@@ -94,6 +81,7 @@ export const Home = () => {
     setModalType('Delete');
     setTask(card);
   };
+
   const onOpenModal = (card: ITask) => {
     console.log(card);
     setTask(card);
@@ -120,7 +108,7 @@ export const Home = () => {
         </Grid>
       </Grid>
       <Divider />
-      {!!Tasks&&Tasks.length > 0 && (
+      {!!Tasks && Tasks.length > 0 && (
         <>
           <Grid container spacing={2} sx={{ marginTop: '20px' }}>
             {Tasks.map((card, index) => (
@@ -222,24 +210,18 @@ export const Home = () => {
         </>
       )}
 
-      {    (!!Tasks&&Tasks.length == 0 && !Loading ) ||(!Tasks&&!Loading) && (
-        <Box
-          sx={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '300px',
-            height: '200px',
-            textAlign: 'center',
-          }}
-        >
-          <ContentPasteSearchTwoToneIcon
-            sx={{ width: '300px', height: '200px' }}
-          ></ContentPasteSearchTwoToneIcon>
-          <Typography variant="h6"> You have not created any task. </Typography>
-        </Box>
-      )}
+      {Tasks == null ||
+        (Tasks?.length == 0 && !Loading && (
+          <Box className="noTaskBox">
+            <ContentPasteSearchTwoToneIcon
+              sx={{ width: '300px', height: '200px' }}
+            ></ContentPasteSearchTwoToneIcon>
+            <Typography variant="h6">
+              {' '}
+              You have not created any task.{' '}
+            </Typography>
+          </Box>
+        ))}
       {Loading && (
         <CircularProgress sx={{ position: 'fixed', top: '50%', left: '50%' }} />
       )}

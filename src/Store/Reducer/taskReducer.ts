@@ -16,7 +16,6 @@ const initialState: ITaskState = {
 export const taskReducer = (state = initialState, action: any): ITaskState => {
   switch (action.type) {
     case GET_TASK_STARTED:
-      console.log('ab')
       return { ...state, Tasks: action.payload, Loading: true };
     case GET_TASK_SUCCESS:
       return { ...state, Tasks: action.payload, Loading: false };

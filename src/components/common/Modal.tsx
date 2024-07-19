@@ -25,7 +25,6 @@ interface sidebarprops {
 }
 const CustomizedDialogs: React.FC<sidebarprops> = ({ open, card, toggle }) => {
   const [val, setVal] = React.useState(card.Description);
-  console.log('2');
   return (
     <React.Fragment>
       <BootstrapDialog

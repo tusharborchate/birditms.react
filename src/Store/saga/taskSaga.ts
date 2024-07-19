@@ -18,13 +18,12 @@ import {
 
 function* GetTasks(): any {
   yield put({ type: SET_LOADING, payload: true });
-console.log('cd')
+  console.log('cd');
   try {
     const response: AxiosResponse = yield call(axiosInstance.get, 'birditasks');
     console.log(response);
     if (response.status == 200) {
-        yield put({ type: GET_TASK_SUCCESS, payload: response.data });
-      
+      yield put({ type: GET_TASK_SUCCESS, payload: response.data });
     }
   } catch (Error) {
     yield put({ type: GET_TASK_FAILED, payload: false });

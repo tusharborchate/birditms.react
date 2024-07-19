@@ -68,7 +68,6 @@ const CreateTaskSidebar: React.FC<sidebarprops> = ({
     formState: { errors },
     reset,
   } = useForm<IForm>();
-  console.log(TaskInfo);
   const name = TaskInfo ? 'Edit' : 'Create';
   const edit = TaskInfo ? true : false;
 
@@ -76,8 +75,6 @@ const CreateTaskSidebar: React.FC<sidebarprops> = ({
     if (!dayjs(data.DueDate, 'DD-MM-YYYY').isValid()) {
       return false;
     }
-    console.log(data.Description);
-    console.log(data);
     data.DueDate = dayjs(data.DueDate, 'DD-MM-YYYY').toDate();
     data.Description = data.Description.replace(/\s\s+/g, ' ');
     data.Status = data.Status.value;
@@ -123,10 +120,6 @@ const CreateTaskSidebar: React.FC<sidebarprops> = ({
       task.DueDate = dayjs(new Date());
       reset(task);
     }
-
-    // reset({
-    //   DueDate: dayjs(new Date()),
-    // });
   };
 
   const StyledDrawer = styled(Drawer)(({ theme }): any => ({
@@ -136,6 +129,7 @@ const CreateTaskSidebar: React.FC<sidebarprops> = ({
       width: drawerWidth,
     },
   }));
+
   useEffect(() => {
     resetForm();
   }, [open, TaskInfo]);

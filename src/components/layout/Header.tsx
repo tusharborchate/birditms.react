@@ -21,16 +21,10 @@ import Sidebar from '../common/Sidebar';
 import { useSelector } from 'react-redux';
 
 const Header: React.FC = () => {
-  const navigate = useNavigate();
-
   const settings = ['Logout'];
   const location = useLocation();
   const [open, setOpen] = useState(false);
-  // useEffect(() => {
-  //   if (user == null) {
-  //     //get user
-  //   }
-  // }, [user]);
+
   const toggleSidebar = () => {
     setOpen(!open);
   };
