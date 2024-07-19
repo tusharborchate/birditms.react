@@ -211,15 +211,17 @@ export const Home = () => {
 
       {Tasks == null ||
         (Tasks?.length == 0 && !Loading && (
-          <Box sx={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '300px',
-            height: '200px',
-            textAlign: 'center',
-          }}>
+          <Box
+            sx={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '300px',
+              height: '200px',
+              textAlign: 'center',
+            }}
+          >
             <ContentPasteSearchTwoToneIcon
               sx={{ width: '300px', height: '200px' }}
             ></ContentPasteSearchTwoToneIcon>
