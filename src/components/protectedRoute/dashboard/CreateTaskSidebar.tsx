@@ -241,7 +241,7 @@ const CreateTaskSidebar: React.FC<sidebarprops> = ({
                 }}
                 render={({ field }) => (
                   <DatePicker
-                   slotProps={{ popper: { placement: 'auto' }}}
+                    slotProps={{ popper: { placement: 'auto' } }}
                     defaultValue={dayjs(new Date())}
                     sx={{ margin: '15px 0 0 0', width: '100%' }}
                     label="Due Date"
